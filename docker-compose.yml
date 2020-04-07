@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  webbridge:
+    build: .
+    environment:
+      - PORT=1337
+    networks:
+      - frontend
+    ports:
+      - 1337:1337
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webbridge.rule=Host(`bridge1.soehnle.de`)
+      - traefik.http.routers.enrtrypoint=web
+      - traefik.http.services.webbridge.loadbalancer.server.port=1337
+    restart: unless-stopped
+
+networks:
+  frontend:
+    external: true

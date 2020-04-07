@@ -1,0 +1,24 @@
+{
+  "name": "soehnle-bridge",
+  "version": "1.0.0",
+  "description": "A self-hosted endpoint for smart Soehnle scales",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mplabs/soehnle-bridge.git"
+  },
+  "keywords": [],
+  "author": "Felix Dürrwald <mplabs@mplabs.de> (https://github.com/mplabs)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mplabs/soehnle-bridge/issues"
+  },
+  "homepage": "https://github.com/mplabs/soehnle-bridge#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
