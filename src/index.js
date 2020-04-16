@@ -1,23 +1,28 @@
 const express = require('express')
 
-const { HOST = '0.0.0.0', PORT = 1337 } = process.env
+const { ash } = require('./libs/util')
+const FileResource = require('./libs/file.resource')
+
+const { NODE_ENV, HOST = '0.0.0.0', PORT = 1337 } = process.env
+
+const file = FileResource(`${__dirname}/data.log`)
 
 const app = express()
 
 // http://bridge1.soehnle.de/devicedataservice/dataservice
 
-const handleData = data => {
-  const weight = parseFloat(parseInt(data.substring(38,42),16))/100.0
-  console.log(`Scale reported ${weight}kg`)
-}
+const getWeightInKg = data => parseFloat(parseInt(data.substring(38,42),16))/100.0
 
-app.get('/devicedataservice/dataservice', (req, res) => {
-  let response = ''
+app.get('/devicedataservice/dataservice', ash(async (req, res) => {
   const { data } = req.query
 
   switch(data.substring(0,2)) {
     case '24':
-      handleData(data)
+      if (await file.exists() && await fs.writeable()) {
+        await file.append(`${(new Date()).toISOString()}\t${getWeightInKg(data)}kg\n`)
+      } else {
+        next('Logfile not writeable')
+      }
       res.send('A00000000000000001000000000000000000000000000000bec650a1')
       break
 
@@ -42,9 +47,18 @@ app.get('/devicedataservice/dataservice', (req, res) => {
       break
 
     default:
-      console.log(`Something strange was send: ${data}`)
+      console.log(`Something strange was sent: ${data}`)
       res.send('00000')
   }
+}))
+
+app.use((er, req, res, next) => {
+  if (NODE_ENV !== 'production') {
+    console.error(err)
+  }
+
+  res.sendStatus(500)
+  next()
 })
 
 app.listen(PORT, HOST, () => console.log(`Server started on ${HOST}:${PORT}...`))
